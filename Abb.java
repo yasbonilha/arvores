@@ -78,5 +78,96 @@ public class Abb {
         return toStringEmOrdemRec(atual.getEsquerda()) + atual.getInfo() + " " + toStringEmOrdemRec(atual.getDireita()); //aqui estamos criando uma arvore de fibonacci basicamente. primeiro ele vai pegar tudo que esta à esquerda, depois vai pegar a informação da raiz, depois vai pegar todas as informações da direita.
     }
 
+    public int numeroNos (){
+        if (estaVazia()) {
+            return 0;
+        }
+        return numeroNosRec(raiz);
+    }
 
+    int numeroNosRec (No atual) {
+        if (atual == null) return 0;
+        return numeroNosRec(atual.getEsquerda()) + 1 + numeroNosRec(atual.getDireita());
+    }
+
+    public int altura() {
+        if (estaVazia()) return 0;
+        return alturaRec(raiz);
+    }
+
+    int alturaRec( No atual) { // a recursao é um problema de implementação do desenvolvedor!! o usuário não precisa saber como estamos fazendo o que ele quer.
+        if (atual.getEsquerda() == null && atual.getDireita() == null) return 0;
+
+        int nivelEsq = 0;
+        if (atual.getEsquerda() != null) {
+            nivelEsq = alturaRec(atual.getEsquerda());
+        }
+
+        int nivelDir = atual.getDireita()!= null ? alturaRec(atual.getDireita()) : 0;
+
+        return nivelDir > nivelEsq ? nivelDir + 1 : nivelEsq + 1;
+    }
+
+    public boolean busca (int x) {
+        if (estaVazia()) return false;
+        return buscaRec( x, raiz);
+    }
+
+    boolean buscaRec(int x, No atual) { //aqu ja fizemos a avaliacao de se esta vazia ou nao
+        // podemos fazer dos dois jeitos, os dois estao corretos e possuem o mesmo desempenho. a unica coisa é que temos que escolher como que fazemos para fazer igual dos dois lados para nao azedar a recursao. o primeiro metodo requer a verificaçao antes da chamada. já o modo dois faz a verificacao do no na chegada da chamada.
+
+        //metodo 1
+        // if (x == atual.getInfo()) return true;
+        // if (x <= atual.getInfo())
+        //     if (atual.getEsquerda() != null) //so podemos entrar mais na arvore se a subarvore nao for nula!
+        //         return buscaRec(x, atual.getEsquerda());
+        //         else return false;
+
+        
+        //metodo 2 - achamos a legibilidade um pouco melhor, a machion disse que gosta mais porque acha que temos mais controle. ainda podemos nomear uma variavel local para armazenar a informação do atual e tirar o = do <= da condicao do if - já que ja testamos essa possibilidade na linha de cima
+        if (atual == null) return false;
+        if (atual.getInfo() == x) return true;
+        if (x <= atual.getInfo()) return buscaRec(x, atual.getEsquerda());
+        return buscaRec(x, atual.getDireita());
+            
+    }
+
+    //algumas implementações optam por nao remover os nos da arvore, so definir um atributo para se eles estao ativos ou nao. dessa forma, eles ainda participam da arvore quando vamos procurar algum lugar para inserir um novo elemento, mas na hora de mostrar a arvore so levamos em consideracao os nos ativos
+    public boolean remocao(int x) {
+        if(estaVazia()) return false;
+        return remocaoRec(x, raiz, null, false);
+    }
+
+    boolean remocaoRec(int x, No atual, No pai, boolean eFilhoEsquerdo){
+        //quando vamos remover um elemento, quem sera atualizado sera o pai dele. logo, para remove-lo, teremos que saber quem era o pai dele. faremos a primeira versao considerando que o elemento a ser removido nao é a raiz e que nao temos o pai armazenado nos atributos do no - mais facil
+        if (atual == null) return false;
+        if (atual.getInfo() == x) {
+            if(atual.getEsquerda() == null && atual.getDireita() == null) { // no a ser removido nao tem filhos
+                if( eFilhoEsquerdo )
+                    pai.setEsquerda(null);
+                else
+                    pai.setDireita(null);
+            }
+            else{
+                if (atual.getEsquerda() == null) { //como ele passou do primeiro if, significa que ele so tem filho da direita
+                    if(eFilhoEsquerdo)
+                        pai.setEsquerda(atual.getDireita());
+                    else pai.setDireita(atual.getDireita());
+                }
+                else if (atual.getDireita() == null) { // so tem filho da esquerda (temos que colocar dessa forma porque ele pode ter filhos dos dois lados)
+                    if(eFilhoEsquerdo)
+                        pai.setEsquerda(atual.getEsquerda());
+                    else pai.setDireita(atual.getEsquerda());
+                }
+                else{ //tem os dois filhos
+
+                }
+            }
+        }
+        else if ( x < atual.getInfo()){
+
+        }else{ //x é maior
+
+        }
+    }
 }
