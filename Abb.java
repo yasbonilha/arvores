@@ -65,6 +65,7 @@ public class Abb {
     }
 
     //nao é override porque é um processamento em arvore. estamos fazendo um tostring mas poderia ser qualquer tipo de processamento
+    //o toString da estrutura sempre vai dar uma dica de como fazemos a varredura dessa estrutura
     public String toStringEmOrdem() {
         if(estaVazia())
             return "arvore vazia";
@@ -85,6 +86,7 @@ public class Abb {
         return numeroNosRec(raiz);
     }
 
+    //para achar a quantidade de nos, o metodo varre a subarvore da esquerda e conta todos os nos, pega a raiz (1 no) e varre a subarvore da direita
     int numeroNosRec (No atual) {
         if (atual == null) return 0;
         return numeroNosRec(atual.getEsquerda()) + 1 + numeroNosRec(atual.getDireita());
@@ -106,6 +108,7 @@ public class Abb {
         int nivelDir = atual.getDireita()!= null ? alturaRec(atual.getDireita()) : 0;
 
         return nivelDir > nivelEsq ? nivelDir + 1 : nivelEsq + 1;
+        //vai pegar a subarvore que tem mais niveis (que corresponde ao nivel real da arvore)
     }
 
     public boolean busca (int x) {
