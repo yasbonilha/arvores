@@ -162,15 +162,37 @@ public class Abb {
                         pai.setEsquerda(atual.getEsquerda());
                     else pai.setDireita(atual.getEsquerda());
                 }
-                else{ //tem os dois filhos
+                else{ //tem os dois filhos - o sucessor é o menor valor maior que o número a ser removido. isso garante que o atributo esquerda seja nulo, ou seja, esteja disponível (palavras da grande machion) - vamos pendurar a subarvore da esquerda do pai do elemento no braço livre da esquerda do sucessor (menor valor maior que o número a ser removido). enquanto isso, o braco direito do elemento a ser removido vai ser "doado" para o braço esquerdo do valor pai do elemento a ser removido (ou seja, pai do pai). = tudo isso para um no que é removido à esquerda
+                // a subarvore da direita do no a ser removido vai ser sub (dir/esq) do pai e a subarvore da esquerda do no a ser removido vai ser a subarvore da esquerda do sucessor (sendo que esquerda ou direita depende do eFilhoEsquerda)
+                    No sucessor = atual.getDireita();
+                    while ( sucessor.getEsquerda() != null) {
+                        sucessor = sucessor.getEsquerda(); //nao precisa ser recursivo porque eu estou andando em uma direcao so
+                    }
+                    sucessor.setEsquerda(atual.getEsquerda()); //criamos uma ligação entre o menor elemento da subarvore da direita (o sucessor) e a subarvore da esquerda do elemento a ser removido
 
+                    if(pai == null) {
+                        raiz = atual.getDireita();
+                    } else if (eFilhoEsquerdo) { //porque se ele nao tem pai, ele é a raiz. logo, se nao colocarmos else if, ele vai cair no ultimo else e vai dar nullpointer exception
+                        pai.setEsquerda(sucessor);
+                    } else {
+                        pai.setDireita(sucessor);
+                    }
                 }
             }
+            return true;
         }
         else if ( x < atual.getInfo()){
+            eFilhoEsquerdo = true;
+            pai = atual; //vamos passar o atual como pai e dizer que o filho é da esquerda (é assim que fazemos a atribuição dessas variaveis)
+            return remocaoRec(x, atual.getEsquerda(), pai, eFilhoEsquerdo);
 
         }else{ //x é maior
+            eFilhoEsquerdo = false;
+            pai = atual;
+            return remocaoRec(x, atual.getDireita(), pai, eFilhoEsquerdo);
+
 
         }
     }
+
 }
