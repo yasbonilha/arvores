@@ -141,11 +141,15 @@ public class Abb {
         return remocaoRec(x, raiz, null, false);
     }
 
+    //flag eFilhoEsquerdo indica se ele é filho da esquerda ou nao. no caso de ser raiz, ele va ser falso, mas nao vai ser usado (porque a raiz nao é filha)
+    //temos que fazer a verificação de se for raiz para qualquer caso de numero de filhos
     boolean remocaoRec(int x, No atual, No pai, boolean eFilhoEsquerdo){
         //quando vamos remover um elemento, quem sera atualizado sera o pai dele. logo, para remove-lo, teremos que saber quem era o pai dele. faremos a primeira versao considerando que o elemento a ser removido nao é a raiz e que nao temos o pai armazenado nos atributos do no - mais facil
         if (atual == null) return false;
         if (atual.getInfo() == x) {
             if(atual.getEsquerda() == null && atual.getDireita() == null) { // no a ser removido nao tem filhos
+                if(atual == raiz) //se ele nao tiver filhos e for excluida, nao existe mais arvore (a raiz vira null)
+                    raiz = null;
                 if( eFilhoEsquerdo )
                     pai.setEsquerda(null);
                 else
@@ -153,29 +157,35 @@ public class Abb {
             }
             else{
                 if (atual.getEsquerda() == null) { //como ele passou do primeiro if, significa que ele so tem filho da direita
-                    if(eFilhoEsquerdo)
+                    if (atual == raiz) 
+                        raiz = atual.getDireita();
+                    else if(eFilhoEsquerdo)
                         pai.setEsquerda(atual.getDireita());
                     else pai.setDireita(atual.getDireita());
                 }
                 else if (atual.getDireita() == null) { // so tem filho da esquerda (temos que colocar dessa forma porque ele pode ter filhos dos dois lados)
-                    if(eFilhoEsquerdo)
+                    if (atual == raiz) 
+                        raiz = atual.getEsquerda();
+                    else if(eFilhoEsquerdo)
                         pai.setEsquerda(atual.getEsquerda());
                     else pai.setDireita(atual.getEsquerda());
                 }
                 else{ //tem os dois filhos - o sucessor é o menor valor maior que o número a ser removido. isso garante que o atributo esquerda seja nulo, ou seja, esteja disponível (palavras da grande machion) - vamos pendurar a subarvore da esquerda do pai do elemento no braço livre da esquerda do sucessor (menor valor maior que o número a ser removido). enquanto isso, o braco direito do elemento a ser removido vai ser "doado" para o braço esquerdo do valor pai do elemento a ser removido (ou seja, pai do pai). = tudo isso para um no que é removido à esquerda
                 // a subarvore da direita do no a ser removido vai ser sub (dir/esq) do pai e a subarvore da esquerda do no a ser removido vai ser a subarvore da esquerda do sucessor (sendo que esquerda ou direita depende do eFilhoEsquerda)
+                //a subarvore da esquerda é adotada pelo sucessor (sucessor é o menor entre os maiores que o atual - o menor filho da subarvore da direita)
                     No sucessor = atual.getDireita();
                     while ( sucessor.getEsquerda() != null) {
                         sucessor = sucessor.getEsquerda(); //nao precisa ser recursivo porque eu estou andando em uma direcao so
                     }
                     sucessor.setEsquerda(atual.getEsquerda()); //criamos uma ligação entre o menor elemento da subarvore da direita (o sucessor) e a subarvore da esquerda do elemento a ser removido
-
+                    
+                    //a subarvore da direita é adotada pelo pai ou é a raiz (a raiz vai ser a subarvore da direita)
                     if(pai == null) {
                         raiz = atual.getDireita();
                     } else if (eFilhoEsquerdo) { //porque se ele nao tem pai, ele é a raiz. logo, se nao colocarmos else if, ele vai cair no ultimo else e vai dar nullpointer exception
-                        pai.setEsquerda(sucessor);
+                        pai.setEsquerda(atual.getDireita());
                     } else {
-                        pai.setDireita(sucessor);
+                        pai.setDireita(atual.getDireita());
                     }
                 }
             }
